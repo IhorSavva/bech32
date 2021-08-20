@@ -7,7 +7,7 @@ import 'exceptions.dart';
 const SegwitCodec segwit = SegwitCodec();
 
 /// A codec which converts a Segwit class to its String representation and vice versa.
-class SegwitCodec extends Codec<Segwit, String> {
+class SegwitCodec extends Codec<Segwit, SegwitInput> {
   const SegwitCodec();
 
   @override
@@ -15,21 +15,23 @@ class SegwitCodec extends Codec<Segwit, String> {
   @override
   SegwitEncoder get encoder => SegwitEncoder();
 
+  void setValidHrp(String hrp) {}
+
   @override
-  String encode(Segwit data) {
+  SegwitInput encode(Segwit data) {
     return SegwitEncoder().convert(data);
   }
 
   @override
-  Segwit decode(String data) {
+  Segwit decode(SegwitInput data) {
     return SegwitDecoder().convert(data);
   }
 }
 
 /// This class converts a Segwit class instance to a String.
-class SegwitEncoder extends Converter<Segwit, String> with SegwitValidations {
+class SegwitEncoder extends Converter<Segwit, SegwitInput> with SegwitValidations {
   @override
-  String convert(Segwit input) {
+  SegwitInput convert(Segwit input) {
     var version = input.version;
     var program = input.program;
 
@@ -46,23 +48,23 @@ class SegwitEncoder extends Converter<Segwit, String> with SegwitValidations {
     }
 
     if (isWrongVersion0Program(version, program)) {
-      throw InvalidProgramLength(
-          'version $version invalid with length ${program.length}');
+      throw InvalidProgramLength('version $version invalid with length ${program.length}');
     }
 
     var data = _convertBits(program, 8, 5, true);
 
-    return bech32.encode(Bech32(input.hrp, [version] + data));
+    var encoded = bech32.encode(Bech32(input.hrp, [version] + data));
+    return SegwitInput(input.hrp, encoded);
   }
 }
 
 /// This class converts a String to a Segwit class instance.
-class SegwitDecoder extends Converter<String, Segwit> with SegwitValidations {
+class SegwitDecoder extends Converter<SegwitInput, Segwit> with SegwitValidations {
   @override
-  Segwit convert(String input) {
-    var decoded = bech32.decode(input);
+  Segwit convert(SegwitInput input) {
+    var decoded = bech32.decode(input.address);
 
-    if (isInvalidHrp(decoded.hrp)) {
+    if (isInvalidHrp(decoded.hrp, input.validHrp.toLowerCase())) {
       throw InvalidHrp();
     }
 
@@ -87,8 +89,7 @@ class SegwitDecoder extends Converter<String, Segwit> with SegwitValidations {
     }
 
     if (isWrongVersion0Program(version, program)) {
-      throw InvalidProgramLength(
-          'version $version invalid with length ${program.length}');
+      throw InvalidProgramLength('version $version invalid with length ${program.length}');
     }
 
     return Segwit(decoded.hrp, version, program);
@@ -97,8 +98,8 @@ class SegwitDecoder extends Converter<String, Segwit> with SegwitValidations {
 
 /// Generic validations for a Segwit class.
 class SegwitValidations {
-  bool isInvalidHrp(String hrp) {
-    return hrp != 'bc' && hrp != 'tb';
+  bool isInvalidHrp(String hrp, String validHrp) {
+    return hrp != validHrp;
   }
 
   bool isEmptyProgram(List<int> data) {
@@ -132,11 +133,15 @@ class Segwit {
 
   String get scriptPubKey {
     var v = version == 0 ? version : version + 0x50;
-    return ([v, program.length] + program)
-        .map((c) => c.toRadixString(16).padLeft(2, '0'))
-        .toList()
-        .join('');
+    return ([v, program.length] + program).map((c) => c.toRadixString(16).padLeft(2, '0')).toList().join('');
   }
+}
+
+class SegwitInput {
+  SegwitInput(this.validHrp, this.address);
+
+  final String validHrp;
+  final String address;
 }
 
 List<int> _convertBits(List<int> data, int from, int to, bool pad) {

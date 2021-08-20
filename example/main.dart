@@ -1,9 +1,8 @@
-import 'package:bech32/bech32.dart';
+import 'package:defichain_bech32/defichain_bech32.dart';
 
 //ignore_for_file: avoid_print
 void main() {
-  var address = segwit.decode(
-      'bc1pw508d6qejxtdg4y5r3zarvary0c5xw7kw508d6qejxtdg4y5r3zarvary0c5xw7k7grplx');
+  var address = segwit.decode(SegwitInput('bc1', 'bc1pw508d6qejxtdg4y5r3zarvary0c5xw7kw508d6qejxtdg4y5r3zarvary0c5xw7k7grplx'));
   print('scriptPubKey: ${address.scriptPubKey}');
   print('version: ${address.version}');
   print('program: ${address.program}');

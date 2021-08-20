@@ -1,7 +1,7 @@
-import 'package:bech32/src/bech32.dart';
+import 'package:defichain_bech32/src/bech32.dart';
 import 'package:test/test.dart';
 
-import 'package:bech32/bech32.dart';
+import 'package:defichain_bech32/defichain_bech32.dart';
 
 void main() {
   group('bech32 with', () {
@@ -40,8 +40,7 @@ void main() {
           });
         })
         ..forEach((req) {
-          test('decode then encode BOLT11 String: ${req.substring(0, 90)}...',
-              () {
+          test('decode then encode BOLT11 String: ${req.substring(0, 90)}...', () {
             var l = req.length;
             expect(
               bech32.encode(bech32.decode(req, l), l),
@@ -53,65 +52,51 @@ void main() {
 
     group('invalid test vectors from specification having', () {
       test('hrp character out of range (space char)', () {
-        expect(() => bech32.decode('\x20' '1nwldj5'),
-            throwsA(TypeMatcher<OutOfRangeHrpCharacters>()));
+        expect(() => bech32.decode('\x20' '1nwldj5'), throwsA(TypeMatcher<OutOfRangeHrpCharacters>()));
       });
 
       test('hrp character out of range (delete char)', () {
-        expect(() => bech32.decode('\x7F' '1axkwrx'),
-            throwsA(TypeMatcher<OutOfRangeHrpCharacters>()));
+        expect(() => bech32.decode('\x7F' '1axkwrx'), throwsA(TypeMatcher<OutOfRangeHrpCharacters>()));
       });
 
       test('hrp character out of range (control char)', () {
-        expect(() => bech32.decode('\x80' '1eym55h'),
-            throwsA(TypeMatcher<OutOfRangeHrpCharacters>()));
+        expect(() => bech32.decode('\x80' '1eym55h'), throwsA(TypeMatcher<OutOfRangeHrpCharacters>()));
       });
 
       test('too long overall', () {
-        expect(
-            () => bech32.decode(
-                'an84characterslonghumanreadablepartthatcontainsthenumber1andtheexcludedcharactersbio1569pvx'),
-            throwsA(TypeMatcher<TooLong>()));
+        expect(() => bech32.decode('an84characterslonghumanreadablepartthatcontainsthenumber1andtheexcludedcharactersbio1569pvx'), throwsA(TypeMatcher<TooLong>()));
       });
 
       test('no separator', () {
-        expect(() => bech32.decode('pzry9x0s0muk'),
-            throwsA(TypeMatcher<InvalidSeparator>()));
+        expect(() => bech32.decode('pzry9x0s0muk'), throwsA(TypeMatcher<InvalidSeparator>()));
       });
 
       test('empty hpr', () {
-        expect(() => bech32.decode('1pzry9x0s0muk'),
-            throwsA(TypeMatcher<TooShortHrp>()));
+        expect(() => bech32.decode('1pzry9x0s0muk'), throwsA(TypeMatcher<TooShortHrp>()));
       });
 
       test('invalid data character', () {
-        expect(() => bech32.decode('x1b4n0q5v'),
-            throwsA(TypeMatcher<OutOfBoundChars>()));
+        expect(() => bech32.decode('x1b4n0q5v'), throwsA(TypeMatcher<OutOfBoundChars>()));
       });
 
       test('too short checksum', () {
-        expect(() => bech32.decode('li1dgmt3'),
-            throwsA(TypeMatcher<TooShortChecksum>()));
+        expect(() => bech32.decode('li1dgmt3'), throwsA(TypeMatcher<TooShortChecksum>()));
       });
 
       test('invalid checksum character', () {
-        expect(() => bech32.decode('de1lg7wt' '\xFF'),
-            throwsA(TypeMatcher<OutOfBoundChars>()));
+        expect(() => bech32.decode('de1lg7wt' '\xFF'), throwsA(TypeMatcher<OutOfBoundChars>()));
       });
 
       test('checksum calculated from upper case hpr', () {
-        expect(() => bech32.decode('A1G7SGD8'),
-            throwsA(TypeMatcher<InvalidChecksum>()));
+        expect(() => bech32.decode('A1G7SGD8'), throwsA(TypeMatcher<InvalidChecksum>()));
       });
 
       test('empty hpr, case one', () {
-        expect(() => bech32.decode('10a06t8'),
-            throwsA(TypeMatcher<TooShortHrp>()));
+        expect(() => bech32.decode('10a06t8'), throwsA(TypeMatcher<TooShortHrp>()));
       });
 
       test('empty hpr, case two', () {
-        expect(() => bech32.decode('1qzzfhee'),
-            throwsA(TypeMatcher<TooShortHrp>()));
+        expect(() => bech32.decode('1qzzfhee'), throwsA(TypeMatcher<TooShortHrp>()));
       });
     });
 
@@ -125,8 +110,7 @@ void main() {
       test('invalid maxLength parameter', () {
         var str =
             'lnbc1pvjluezpp5qqqsyqcyq5rqwzqfqqqsyqcyq5rqwzqfqqqsyqcyq5rqwzqfqypqdpl2pkx2ctnv5sxxmmwwd5kgetjypeh2ursdae8g6twvus8g6rfwvs8qun0dfjkxaq8rkx3yf5tcsyz3d73gafnh3cax9rn449d9p5uxz9ezhhypd0elx87sjle52x86fux2ypatgddc6k63n7erqz25le42c4u4ecky03ylcqca784w';
-        expect(() => bech32.decode(str, str.length - 5),
-            throwsA(TypeMatcher<TooLong>()));
+        expect(() => bech32.decode(str, str.length - 5), throwsA(TypeMatcher<TooLong>()));
       });
     });
   });
