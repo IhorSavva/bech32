@@ -1,4 +1,5 @@
-import 'package:defichain_bech32/defichain_bech32.dart';
+import 'package:defichain_bech32/src/bech32.dart';
+import 'package:defichain_bech32/src/segwit.dart';
 
 //ignore_for_file: avoid_print
 void main() {

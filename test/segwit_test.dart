@@ -1,7 +1,8 @@
+import 'package:defichain_bech32/src/exceptions.dart';
+import 'package:defichain_bech32/src/segwit.dart';
 import 'package:hex/hex.dart';
 import 'package:test/test.dart';
 
-import 'package:defichain_bech32/defichain_bech32.dart';
 
 void main() {
   group('segwit with', () {

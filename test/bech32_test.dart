@@ -1,7 +1,7 @@
 import 'package:defichain_bech32/src/bech32.dart';
+import 'package:defichain_bech32/src/exceptions.dart';
 import 'package:test/test.dart';
 
-import 'package:defichain_bech32/defichain_bech32.dart';
 
 void main() {
   group('bech32 with', () {
